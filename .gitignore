@@ -1,7 +1,25 @@
+# dependensi
 node_modules
+
+# hasil build Nuxt
 .nuxt
 .output
+.data
+dev-dist
 dist
+.vite
+
+# env: .env.example ikut ter-commit, nilai sebenarnya tidak
 .env
+.env.*
+!.env.example
+
+# arsip sementara & log
+*.tgz
 *.log
+coverage
+
+# OS & editor
 .DS_Store
+Thumbs.db
+.idea

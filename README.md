@@ -1,6 +1,6 @@
 # couple-app — Fase 1 (Frontend + Dummy Data)
 
-Implementasi `docs/01-frontend.md`. Tidak ada database, tidak ada auth nyata,
+Implementasi `docs/01-frontend.md` (spesifikasi lengkap Fase 1–3 ada di `docs/`). Tidak ada database, tidak ada auth nyata,
 tidak ada SDK AI, tidak ada payment gateway. 47 layar, semuanya jalan di atas
 mock server Nitro yang path-nya mirror 1:1 dengan NestJS di Fase 2.
 
