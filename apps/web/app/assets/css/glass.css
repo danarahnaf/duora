@@ -1,0 +1,139 @@
+/*
+ * Material kaca — turunan prinsip Liquid Glass (iOS 26) ke web.
+ *
+ * SwiftUI punya .glassEffect() yang menghitung refraksi dan pantulan cahaya
+ * secara nyata. Web tidak punya itu, jadi materialnya disusun dari tiga lapis
+ * yang bisa dijalankan compositor tanpa biaya per-frame:
+ *   1. backdrop-filter  — blur + saturate + brightness: warna dari konten di
+ *                         belakang ikut terbawa, ini yang membuat kaca terasa
+ *                         "mengambil warna sekitarnya".
+ *   2. rim spekular     — inset highlight di tepi atas, bayangan tipis di tepi
+ *                         bawah. Menggantikan border 1px rata, yang membuat
+ *                         kaca terbaca seperti kotak beroutline, bukan material.
+ *   3. gradien refraksi — kilau halus di 40% teratas permukaan.
+ *
+ * Batas keras dari §4.2 TIDAK dilonggarkan oleh file ini:
+ *   - blur() maksimal 20px
+ *   - maksimal 2 layer glass bertumpuk per layar
+ *   - jangan pasang glass pada elemen yang ikut scroll panjang
+ *   - nav bawah & sheet boleh glass; kartu di dalam list TIDAK
+ */
+
+@layer components {
+  /*
+   * CATATAN CASCADE — jangan hapus.
+   *
+   * Seluruh file ini berada di `@layer components`. Tailwind v4 menaruh
+   * utility-nya di `@layer utilities`, yang urutannya SETELAH components,
+   * jadi `.fixed`, `.sticky`, `.rounded-*`, dan `.shadow-*` selalu menang
+   * atas aturan di sini.
+   *
+   * Tanpa layer, file ini "unlayered" — dan deklarasi tanpa layer
+   * mengalahkan deklarasi di dalam layer tanpa memandang specificity.
+   * Itu pernah membuat `position: relative` di sini mengalahkan `.fixed`
+   * pada nav bawah, sheet, dan dialog: semuanya jatuh ke aliran halaman
+   * dan tampilan mobile rusak total. `:where()` tidak menolong, karena
+   * masalahnya layer, bukan specificity.
+   *
+   * Material ini juga TIDAK menyetel `position`. Elemen kaca yang perlu
+   * jangkar untuk ::before/::after memakai utility `relative` di template.
+   */
+  
+  .glass-1,
+  .glass-2 {
+    background-color: var(--color-surface);
+  }
+  
+  /*
+   * Rim + kilau refraksi hidup di ::before, BUKAN di box-shadow elemennya.
+   * Kalau rim dipasang sebagai box-shadow host, ia mengalahkan utility
+   * `shadow-*` Tailwind (glass.css di-import setelah Tailwind, specificity
+   * sama) — sheet, dialog, dan popover kehilangan drop shadow-nya dan
+   * terbaca rata menempel di halaman. Di ::before, box-shadow host tetap
+   * bebas dipakai untuk elevasi.
+   */
+  .glass-1::before,
+  .glass-2::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, var(--glass-sheen) 0%, transparent 42%);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim-light),
+      inset 0 0 0 1px var(--glass-rim-edge),
+      inset 0 -1px 0 0 var(--glass-rim-dark);
+  }
+  
+  .glass-1 {
+    border-radius: var(--radius-card);
+    backdrop-filter: blur(16px) saturate(180%) brightness(var(--glass-bright));
+    -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(var(--glass-bright));
+  }
+  
+  .glass-2 { /* untuk sheet/nav di atas glass-1 */
+    backdrop-filter: blur(20px) saturate(190%) brightness(var(--glass-bright));
+    -webkit-backdrop-filter: blur(20px) saturate(190%) brightness(var(--glass-bright));
+  }
+  
+  /*
+   * Padanan .interactive() dari skill: kaca membalas pointer.
+   * Dipasang HANYA pada kaca yang memang bisa ditekan — skill-nya sendiri
+   * bilang jangan semua kaca merespons. Posisi kilau datang dari --gx/--gy
+   * yang diisi useGlassSheen(), dan hanya untuk pointer halus: di layar sentuh
+   * hover adalah false positive saat tap.
+   */
+  .glass-interactive::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      14rem 14rem at var(--gx, 50%) var(--gy, 50%),
+      var(--glass-specular),
+      transparent 70%
+    );
+  }
+  
+  @media (hover: hover) and (pointer: fine) {
+    .glass-interactive::after {
+      transition: opacity var(--dur-pop) var(--ease-out);
+    }
+    .glass-interactive:hover::after { opacity: 1; }
+  }
+  
+  .glass-interactive:active { transform: scale(0.97); }
+  
+  /* Pengganti glass untuk kartu di dalam list panjang (timeline, journal, notifikasi). */
+  /*
+   * Elevasi dinyatakan SEKALI: border atau shadow, tidak keduanya.
+   * Border 1px di bawah shadow lebar menghasilkan "ghost card" — batas kartu
+   * terbaca dua kali, jadi terasa berat tanpa menambah hierarki apa pun.
+   * Kartu di dalam list memakai border saja: lebih ringan dan lebih murah dirender.
+   */
+  .solid-card {
+    background: var(--color-surface-solid);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+  
+  /* Hanya untuk permukaan yang benar-benar melayang di atas konten lain. */
+  .solid-card-raised {
+    background: var(--color-surface-solid);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+  
+  /*
+   * Tanpa backdrop-filter, kaca yang tembus pandang justru merusak keterbacaan.
+   * Turunkan ke permukaan solid — sesuai anti-pattern "opaque background di
+   * belakang kaca": lebih baik jujur solid daripada kaca palsu.
+   */
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass-1, .glass-2 { background-color: var(--color-surface-solid); }
+    .glass-1::before, .glass-2::before { display: none; }
+  }
+}

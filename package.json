@@ -1,0 +1,24 @@
+{
+  "name": "couple-app",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "dev:lan": "pnpm --filter web dev:lan",
+    "build": "pnpm --filter web build",
+    "preview": "pnpm --filter web preview",
+    "typecheck": "pnpm --filter web typecheck",
+    "lint:motion": "node scripts/check-motion.mjs",
+    "lint:contracts": "node scripts/check-contracts.mjs",
+    "verify": "pnpm lint:motion && pnpm lint:contracts && pnpm typecheck && pnpm build"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "vue-demi",
+      "@parcel/watcher",
+      "better-sqlite3",
+      "unrs-resolver"
+    ]
+  }
+}

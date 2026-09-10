@@ -1,0 +1,52 @@
+/*
+ * Motion — §4.3/§4.4. Keyframe HANYA untuk 3 surface delight + skeleton.
+ * Surface yang sering di-retrigger memakai CSS transition, bukan keyframe.
+ */
+
+/* Skeleton shimmer: linear dan cepat. */
+@keyframes skeleton-sweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* Daily question reveal — 1x/hari, boleh delight. */
+@keyframes reveal-blur-in {
+  from { opacity: 0; filter: blur(8px); transform: translateY(6px); }
+  to   { opacity: 1; filter: blur(0);   transform: translateY(0); }
+}
+.reveal-in { animation: reveal-blur-in var(--dur-reveal) var(--ease-out) both; }
+
+/* Love letter unlock — rare, boleh delight. */
+@keyframes letter-unwrap {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.letter-unwrap { animation: letter-unwrap 700ms var(--ease-in-out) both; }
+
+/* Yearly recap — 1x/tahun, stagger panjang diizinkan. */
+@keyframes recap-rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.recap-rise { animation: recap-rise 620ms var(--ease-out) both; }
+
+/* Milestone pada relationship counter — hanya saat milestone tercapai. */
+@keyframes counter-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.counter-pulse { animation: counter-pulse 900ms var(--ease-out) both; }
+
+/*
+ * Reduced motion = lebih sedikit dan lebih lembut, BUKAN nol.
+ * Transisi opacity/warna yang membantu pemahaman dipertahankan.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-property: opacity, background-color, color, border-color !important;
+    transition-duration: 150ms !important;
+  }
+}

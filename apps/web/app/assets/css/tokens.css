@@ -1,0 +1,111 @@
+/* Token visual — §4.1. Semua warna oklch supaya interpolasi gradient/alpha tidak abu-abu. */
+@theme {
+  /* Light — warm, bukan pink */
+  --color-bg:          oklch(0.985 0.008 70);    /* warm cream */
+  --color-bg-deep:     oklch(0.955 0.014 68);
+  --color-surface:     oklch(1 0 0 / 0.72);      /* glass base */
+  --color-surface-solid: oklch(1 0 0);
+  --color-ink:         oklch(0.22 0.02 20);
+  --color-ink-soft:    oklch(0.48 0.02 20);
+  /* placeholder: cukup redup untuk dibedakan dari isi, tetap >=4.5:1 */
+  --color-ink-faint:   oklch(0.56 0.02 20);
+  --color-primary:     oklch(0.55 0.16 15);      /* rose */
+  --color-primary-ink: oklch(0.98 0.01 15);
+  --color-primary-soft: oklch(0.55 0.16 15 / 0.12);
+  --color-accent:      oklch(0.82 0.07 85);      /* champagne */
+  --color-accent-ink:  oklch(0.28 0.05 85);
+  --color-line:        oklch(0.22 0.02 20 / 0.08);
+
+  /*
+   * Material kaca. Rim atas menangkap cahaya, rim bawah mendudukkan permukaan
+   * ke latarnya; keduanya inset supaya terbaca sebagai tepi material, bukan
+   * outline. `bright` sedikit di atas 1 membuat kaca terasa mengangkat warna
+   * di belakangnya, seperti Liquid Glass di iOS.
+   */
+  --glass-rim-light: oklch(1 0 0 / 0.58);
+  --glass-rim-edge:  oklch(1 0 0 / 0.18);
+  --glass-rim-dark:  oklch(0.22 0.02 20 / 0.05);
+  --glass-sheen:     oklch(1 0 0 / 0.10);
+  --glass-specular:  oklch(1 0 0 / 0.22);
+  --glass-bright:    1.06;
+  --color-line-strong: oklch(0.22 0.02 20 / 0.16);
+  --color-danger:      oklch(0.55 0.19 25);
+  --color-danger-ink:  oklch(0.98 0.01 25);
+  --color-success:     oklch(0.62 0.13 150);
+
+  /*
+   * Radius — satu skala, semuanya bernama. Sebelumnya bercampur dengan
+   * rounded-2xl / [22px] / xl / md / [18px] / [20px] / [6px] / [5px]:
+   * delapan nilai tanpa alasan, dan tepi yang berdekatan tidak pernah
+   * sejajar. Ukuran dipilih dari peran elemennya, bukan dari selera:
+   */
+  --radius-xs: 8px;      /* sel kecil: strip mood, kotak streak, hint keyboard */
+  --radius-inner: 12px;  /* tile ikon di dalam kartu */
+  --radius-field: 16px;  /* input, kontrol, tile sedang */
+  --radius-card: 24px;   /* kartu, panel, seksi */
+  --radius-sheet: 28px;  /* khusus bottom sheet */
+  --radius-pill: 999px;  /* tombol, chip, badge, dan wadah berbentuk kapsul */
+
+  /* Type */
+  /* Raleway: angka counter & headline emosional. Fallback ikut sans —
+     kalau fallback-nya serif, pergantian saat font selesai dimuat terasa
+     seperti halaman berganti identitas. */
+  --font-display: "Raleway", ui-sans-serif, system-ui, sans-serif;
+  /* ukuran teks panjang: 65-75ch. Di luar itu mata kehilangan barisnya. */
+  --measure-prose: 68ch;
+
+  /*
+   * Skala teks badan — hanya empat langkah, dan setiap langkah 2px supaya
+   * bedanya benar-benar terbaca. Jangan tambah ukuran di antaranya:
+   * 12 vs 13 vs 14 px tidak menghasilkan hierarki, hanya kebisingan.
+   */
+  --text-fine: 11px;   /* keterangan mikro, badge */
+  --text-meta: 13px;   /* metadata, label seksi, tombol kecil */
+  --text-body: 15px;   /* isi utama */
+  --text-lead: 17px;   /* paragraf pembuka, isi surat */
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Motion */
+  --ease-out:     cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out:  cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer:  cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-press: 160ms;
+  --dur-pop:   180ms;
+  --dur-sheet: 300ms;
+  --dur-reveal: 500ms;
+
+  /* Elevation — lembut, glass tidak boleh punya shadow keras */
+  --shadow-card: 0 1px 2px oklch(0.22 0.02 20 / 0.04), 0 8px 24px oklch(0.22 0.02 20 / 0.06);
+  --shadow-sheet: 0 -8px 40px oklch(0.22 0.02 20 / 0.14);
+}
+
+:root[data-theme="dark"] {
+  --color-bg:      oklch(0.18 0.03 20);   /* deep burgundy / charcoal */
+  --color-bg-deep: oklch(0.14 0.03 20);
+  --color-surface: oklch(1 0 0 / 0.08);
+  --color-surface-solid: oklch(0.24 0.03 20);
+  --color-ink:     oklch(0.96 0.01 70);
+  --color-ink-soft: oklch(0.72 0.02 70);
+  --color-ink-faint: oklch(0.64 0.02 70);
+  --color-primary: oklch(0.68 0.15 15);
+  --color-primary-ink: oklch(0.16 0.03 15);
+  --color-primary-soft: oklch(0.68 0.15 15 / 0.18);
+  --color-accent:  oklch(0.84 0.08 85);
+  --color-accent-ink: oklch(0.20 0.04 85);
+  --color-line:    oklch(1 0 0 / 0.10);
+  /* Gelap: cahaya tepi jauh lebih tipis, dan kaca menggelapkan, bukan mengangkat. */
+  --glass-rim-light: oklch(1 0 0 / 0.16);
+  --glass-rim-edge:  oklch(1 0 0 / 0.08);
+  --glass-rim-dark:  oklch(0 0 0 / 0.28);
+  --glass-sheen:     oklch(1 0 0 / 0.05);
+  --glass-specular:  oklch(1 0 0 / 0.10);
+  --glass-bright:    0.96;
+  --color-line-strong: oklch(1 0 0 / 0.20);
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px oklch(0 0 0 / 0.28);
+  --shadow-sheet: 0 -8px 40px oklch(0 0 0 / 0.5);
+}
+
+/* Theme "sunset" & "midnight" untuk /settings/theme — hanya menggeser primary/accent. */
+:root[data-accent="sunset"] { --color-primary: oklch(0.62 0.17 45); --color-accent: oklch(0.85 0.09 70); }
+:root[data-accent="lavender"] { --color-primary: oklch(0.55 0.13 300); --color-accent: oklch(0.85 0.06 300); }
+:root[data-accent="forest"] { --color-primary: oklch(0.48 0.10 155); --color-accent: oklch(0.84 0.07 120); }
